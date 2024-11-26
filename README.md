@@ -1,3 +1,3 @@
 # XSLeaks-Artifacts
 
-We will upload all of our artifacts by 7 December 2024
+We will upload all our artifacts by December 7, 2024.
