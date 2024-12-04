@@ -137,11 +137,11 @@ function attackPhase(urls, expected_result) {
 					increment = !increment;
 				}, 4000);
 
-                if (iteration <= 360) { // How many times the batch has to be repeated (endtime)
-					setTimeout(() => {
-						executeBatch();
-					}, 1800000); // Repeat the batch of requests after tick
-                }
+                // if (iteration <= 360) { // How many times the batch has to be repeated (endtime)
+				// 	setTimeout(() => {
+				// 		executeBatch();
+				// 	}, 1800000); // Repeat the batch of requests after tick
+                // }
 			}
 
 		}, 2000);
