@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="payload.js"></script>
+    <title>Cross Site Timings</title>
+</head>
+<body>
+    <p>Use the buttons below to simulate either phase and gather response time data.</p>
+    <button onclick="startProcess(true, 'with_cookies')">Exploration Phase (knowing you are logged in)</button>
+    <button onclick="startProcess(true, 'without_cookies')">Exploration Phase (knowing you are NOT logged in)</button>
+    <button onclick="startProcess(false, 'with_cookies')">Exploitation Phase (knowing you are logged in)</button>
+    <button onclick="startProcess(false, 'without_cookies')">Exploitation Phase (knowing you are NOT logged in)</button>
+</body>
+</html>
