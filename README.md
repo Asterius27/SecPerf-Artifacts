@@ -50,9 +50,7 @@ Both scripts handle processing for the exploration and exploitation phases. The 
    - Identify the batch of requests closest in time to the attack.  
    - Remove RTT from the measurements in this array.  
 
-This completes the exploration phase, producing the `X^0`, `X^1`, and `X^R` arrays.  
-
----
+This completes the exploration phase, producing the `X^0`, `X^1`, and `X^R` arrays.
 
 #### Exploitation Phase:
 1. **Model building:**  
