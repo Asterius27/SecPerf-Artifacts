@@ -1,5 +1,7 @@
 # Stochastic Models for Remote Timing Attacks Artifacts
 
+This artifact contains all the measurements that were collected for the paper, along with the scripts for data collection, processing, and result computation. Together, these resources enable the full reproduction of the paper's results.
+
 ## Dependencies/Installation instructions
 
 ### Model
