@@ -2,7 +2,7 @@
 
 Paper title: **Stochastic Models for Remote Timing Attacks**
 
-Artifacts HotCRP Id: **#5** (not your paper Id, but the artifacts id)
+Artifacts HotCRP Id: **#5**
 
 Requested Badge: **Available**, **Functional**, and **Reproduced**
 
@@ -54,7 +54,7 @@ Our attack outperforms BakingTimer on key performance metrics (true positive rat
 To generate the results presented in the table use the launch_model_cross_site.py script.
 
 #### Main Result 3: Number of Requests
-Our attack outperforms the boc test and BakingTimer on key performance metrics (true positive rate, true negative rate and abstention rate) using the same number of requests required by our attack to reach a conclusion. This experiment reuses the same data collected for the previous two experiments and the same scripts, with the only difference being that the arrays passed to the box test and BakingTimer are sliced. Section 6.4, specifically Tables 4 and 5.
+Our attack outperforms the box test and BakingTimer on key performance metrics (true positive rate, true negative rate and abstention rate) using the same number of requests required by our attack to reach a conclusion. This experiment reuses the same data collected for the previous two experiments and the same scripts, with the only difference being that the arrays passed to the box test and BakingTimer are sliced. Section 6.4, specifically Tables 4 and 5.
 To generate the results presented in the tables use a modified version of the launch_model_direct.py and launch_model_cross_site.py scripts.
 
 #### Main Result 4: Robustness Analysis
@@ -73,7 +73,7 @@ Simply launch the launch_model_cross_site.py script (```python launch_model_cros
 Modify the launch_model_direct.py and launch_model_cross_site.py scripts so that when the threshold is reached they save the MATLAB's output line number (variable ```i```) and use it to slice the arrays (using python's slice operator ```[:end]```) passed to the box test and BakingTimer functions (```box_test``` and ```baking_timer```, these functions should be called after executing MATLAB since we need ```i```). This is an extremely easy modification that requires only a couple of lines of code. Then launch the scripts in the same way as was done with the first two experiments. By doing so you should be able to recompute the results presented in Tables 4 and 5. It will take 3-4 hours (depending also on how powerful the CPU is) for each execution and just a couple of megabytes of space. Use the same datasets as before as this is only a study on the performance degradation of BakingTimer and the box test compared to the previous two experiments. The results are saved in a csv file.
 
 #### Experiment 4: Robustness Analysis
-When testing for robustness against RTT variations the launch_model_direct.py script should be modified so that everytime a new measurement is loaded from the json file a random noise gets added using the following function:
+When testing for robustness against RTT variations the launch_model_direct.py script should be modified so that every time a new measurement is loaded from the json file a random noise gets added using the following function:
 ```python
 # Precomputed parameters for the log normal distribution (for the gaussian/normal distribution mean is 0 and standard deviations are the ones reported in the paper. RTT is 40 in both cases.)
 # -0.699627 (std dev: 0.3), 2.45026 (std dev: 7), 3.54887 (std dev: 21)
