@@ -33,7 +33,7 @@ Processing the provided datasets to generate the paper's results takes approxima
 Please refer to the README.md for a complete list of dependencies, installation, and execution instructions.
 
 ### Accessibility (All badges)
-https://github.com/Asterius27/SecPerf-Artifacts/tree/9901cc56236ddd2e96fb8b560734dd65b5127384/
+https://github.com/Asterius27/SecPerf-Artifacts/tree/96920c21cef1862d948c642c9b1ae790a0af7a0e
 
 ### Set up the environment (Only for Functional and Reproduced badges)
 Please refer to the README.md for a complete list of dependencies and installation instructions. Open the HTML file from Chrome if you want to collect data, all other scripts can be run simply by invoking python (python \<script\>.py).
