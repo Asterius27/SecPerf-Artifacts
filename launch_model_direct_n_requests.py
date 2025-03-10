@@ -10,14 +10,14 @@ import shutil
 SITE = 'hotcrp'
 EXECUTE_MATLAB = True
 
-results_path = "Direct_Timing_Results/" + SITE + "/"
+results_path = "Direct_Timing_Number_of_Requests_Results/" + SITE + "/"
 direct_times_path = f'Direct_Timing_Data/{SITE}/'
 th = 15
 nbins = 4
 thresh = 0.90
 
 try:
-    shutil.rmtree("Direct_Timing_Results/" + SITE + "/")
+    shutil.rmtree("Direct_Timing_Number_of_Requests_Results/" + SITE + "/")
 except FileNotFoundError:
     pass
 except Exception as e:
@@ -186,11 +186,6 @@ for dt in attack_resp_times:
     
     filt_resp_times_attack_wrong_email = delete_outliers([float(x) for x in attack_resp_times[dt]['email_wrong_email']]).tolist()
     filt_resp_times_attack_wrong_pw = delete_outliers([float(x) for x in attack_resp_times[dt]['email_wrong_pw']]).tolist()
-
-    # Execute Box Test for comparison
-    box_test(expl_resp_times[dt]['email_wrong_email'], expl_resp_times[dt]['email_wrong_pw'], attack_resp_times[dt]['email_wrong_email'], 
-             'wrong_email', tp_count_bt, fp_count_bt, tn_count_bt, fn_count_bt, unk_count_bt,
-             tp_count_bt_load, fp_count_bt_load, tn_count_bt_load, fn_count_bt_load, unk_count_bt_load, loads[dt])
     
     resp_times_wrong_email_low_load_str = "[" + ", ".join(map(str, filt_resp_times_wrong_email_low_load)) + "]"
     resp_times_wrong_pw_low_load_str = "[" + ", ".join(map(str, filt_resp_times_wrong_pw_low_load)) + "]"
@@ -211,8 +206,9 @@ for dt in attack_resp_times:
                 results.append(row)
 
     i = 0
+    attack_length = 0
     lastl = []
-    os.makedirs(f'Direct_Timing_Results/{SITE}/{loads[dt]}', exist_ok=True)
+    os.makedirs(f'Direct_Timing_Number_of_Requests_Results/{SITE}/{loads[dt]}', exist_ok=True)
     if EXECUTE_MATLAB:
         liness = process.stdout
     else:
@@ -236,13 +232,15 @@ for dt in attack_resp_times:
                     tn_count[0] += 1
                     tn_count_load[loads[dt]] += 1
                     found = True
+                    attack_length = i
             else:
                 if not found and float(output_arr[3]) >= thresh:
                     fp_count[0] += 1
                     fp_count_load[loads[dt]] += 1
                     found = True
+                    attack_length = i
 
-        with open(f'Direct_Timing_Results/{SITE}/{loads[dt]}/{loads[dt]}_users_results_a_{dt}.csv', 'a', newline='') as csv_file:
+        with open(f'Direct_Timing_Number_of_Requests_Results/{SITE}/{loads[dt]}/{loads[dt]}_users_results_a_{dt}.csv', 'a', newline='') as csv_file:
             writer = csv.writer(csv_file)
             if i == 1:
                 writer.writerow(['num_attack_obs', 'pr_wrong_email', 'pr_wrong_pw', 'expected_result', 'last_attack_resp_added', 'th'])
@@ -254,26 +252,30 @@ for dt in attack_resp_times:
         if not found:
             unk_count[0] += 1
             unk_count_load[loads[dt]] += 1
+            attack_length = i
     else:
         if float(lastl[1]) > float(lastl[3]):
             if not found:
                 unk_count[0] += 1
                 unk_count_load[loads[dt]] += 1
+                attack_length = i
         else:
             if not found:
                 unk_count[0] += 1
                 unk_count_load[loads[dt]] += 1
+                attack_length = i
+
+    # Execute Box Test for comparison
+    box_test(expl_resp_times[dt]['email_wrong_email'], expl_resp_times[dt]['email_wrong_pw'], attack_resp_times[dt]['email_wrong_email'][:attack_length], 
+             'wrong_email', tp_count_bt, fp_count_bt, tn_count_bt, fn_count_bt, unk_count_bt,
+             tp_count_bt_load, fp_count_bt_load, tn_count_bt_load, fn_count_bt_load, unk_count_bt_load, loads[dt])
+
 
 
 
     # Now simulate the attack in the case where the target account exists
 
     found = False
-
-    # Execute Box Test for comparison
-    box_test(expl_resp_times[dt]['email_wrong_email'], expl_resp_times[dt]['email_wrong_pw'], attack_resp_times[dt]['email_wrong_pw'], 
-             'wrong_pw', tp_count_bt, fp_count_bt, tn_count_bt, fn_count_bt, unk_count_bt,
-             tp_count_bt_load, fp_count_bt_load, tn_count_bt_load, fn_count_bt_load, unk_count_bt_load, loads[dt])
 
     if EXECUTE_MATLAB:
         # Launch the model (EstimateProba)
@@ -288,8 +290,9 @@ for dt in attack_resp_times:
                 results.append(row)
 
     i = 0
+    attack_length = 0
     lastl = []
-    os.makedirs(f'Direct_Timing_Results/{SITE}/{loads[dt]}', exist_ok=True)
+    os.makedirs(f'Direct_Timing_Number_of_Requests_Results/{SITE}/{loads[dt]}', exist_ok=True)
     if EXECUTE_MATLAB:
         liness = process.stdout
     else:
@@ -313,13 +316,15 @@ for dt in attack_resp_times:
                     tp_count[0] += 1
                     tp_count_load[loads[dt]] += 1
                     found = True
+                    attack_length = i
             else:
                 if not found and float(output_arr[1]) >= thresh:
                     fn_count[0] += 1
                     fn_count_load[loads[dt]] += 1
                     found = True
+                    attack_length = i
 
-        with open(f'Direct_Timing_Results/{SITE}/{loads[dt]}/{loads[dt]}_users_results_b_{dt}.csv', 'a', newline='') as csv_file:
+        with open(f'Direct_Timing_Number_of_Requests_Results/{SITE}/{loads[dt]}/{loads[dt]}_users_results_b_{dt}.csv', 'a', newline='') as csv_file:
             writer = csv.writer(csv_file)
             if i == 1:
                 writer.writerow(['num_attack_obs', 'pr_wrong_email', 'pr_wrong_pw', 'expected_result', 'last_attack_resp_added', 'th'])
@@ -331,29 +336,39 @@ for dt in attack_resp_times:
         if not found:
             unk_count[0] += 1
             unk_count_load[loads[dt]] += 1
+            attack_length = i
     else:
         if float(lastl[1]) <= float(lastl[3]):
             if not found:
                 unk_count[0] += 1
                 unk_count_load[loads[dt]] += 1
+                attack_length = i
         else:
             if not found:
                 unk_count[0] += 1
                 unk_count_load[loads[dt]] += 1
+                attack_length = i
+    
+        # Execute Box Test for comparison
+    box_test(expl_resp_times[dt]['email_wrong_email'], expl_resp_times[dt]['email_wrong_pw'], attack_resp_times[dt]['email_wrong_pw'][:attack_length], 
+             'wrong_pw', tp_count_bt, fp_count_bt, tn_count_bt, fn_count_bt, unk_count_bt,
+             tp_count_bt_load, fp_count_bt_load, tn_count_bt_load, fn_count_bt_load, unk_count_bt_load, loads[dt])
+
+
 
 # Create confusion matrices and save results to file
 confusion_matrix = [[tn_count[0], fp_count[0]], [fn_count[0], tp_count[0]]]
 confusion_matrix_bt = [[tn_count_bt[0], fp_count_bt[0]], [fn_count_bt[0], tp_count_bt[0]]]
 labels = ["Negative", "Positive"]
 df_cm = pd.DataFrame(confusion_matrix, index=[f"Actual {label}" for label in labels], columns=[f"Predicted {label}" for label in labels])
-df_cm.to_csv("Direct_Timing_Results/" + SITE + "/confusion_matrix.csv", index=True)
+df_cm.to_csv("Direct_Timing_Number_of_Requests_Results/" + SITE + "/confusion_matrix.csv", index=True)
 df_cm = pd.DataFrame(confusion_matrix_bt, index=[f"Actual {label}" for label in labels], columns=[f"Predicted {label}" for label in labels])
-df_cm.to_csv("Direct_Timing_Results/" + SITE + "/confusion_matrix_bt.csv", index=True)
-with open("Direct_Timing_Results/" + SITE + "/confusion_matrices_unknown.txt", "a") as file:
+df_cm.to_csv("Direct_Timing_Number_of_Requests_Results/" + SITE + "/confusion_matrix_bt.csv", index=True)
+with open("Direct_Timing_Number_of_Requests_Results/" + SITE + "/confusion_matrices_unknown.txt", "a") as file:
     file.write("Unknown Count: " + str(unk_count[0]) + "\n")
     file.write("Baking Timer Unknown Count: " + str(unk_count_bt[0]) + "\n")
     file.write("Total (fp, tp, fn, tn, unk): " + str(total_all[0]) + "\n")
-with open("Direct_Timing_Results/" + SITE + "/confusion_matrices_rates.txt", "a") as file:
+with open("Direct_Timing_Number_of_Requests_Results/" + SITE + "/confusion_matrices_rates.txt", "a") as file:
     file.write("True Positive Rate: " + str(tp_count[0] / (tp_count[0] + fn_count[0]) if (tp_count[0] + fn_count[0]) > 0 else 0) + "\n")
     file.write("True Negative Rate: " + str(tn_count[0] / (tn_count[0] + fp_count[0]) if (tn_count[0] + fp_count[0]) > 0 else 0) + "\n")
     file.write("Abstention Rate: " + str(unk_count[0] / total_all[0]) + "\n\n")
@@ -366,10 +381,10 @@ for key in tp_count_load:
     confusion_matrix_bt = [[tn_count_bt_load[key], fp_count_bt_load[key]], [fn_count_bt_load[key], tp_count_bt_load[key]]]
     labels = ["Negative", "Positive"]
     df_cm = pd.DataFrame(confusion_matrix, index=[f"Actual {label}" for label in labels], columns=[f"Predicted {label}" for label in labels])
-    df_cm.to_csv("Direct_Timing_Results/" + SITE + "/" + key + "/confusion_matrix.csv", index=True)
+    df_cm.to_csv("Direct_Timing_Number_of_Requests_Results/" + SITE + "/" + key + "/confusion_matrix.csv", index=True)
     df_cm = pd.DataFrame(confusion_matrix_bt, index=[f"Actual {label}" for label in labels], columns=[f"Predicted {label}" for label in labels])
-    df_cm.to_csv("Direct_Timing_Results/" + SITE + "/" + key + "/confusion_matrix_bt.csv", index=True)
-    with open("Direct_Timing_Results/" + SITE + "/" + key + "/confusion_matrices_rates.txt", "a") as file:
+    df_cm.to_csv("Direct_Timing_Number_of_Requests_Results/" + SITE + "/" + key + "/confusion_matrix_bt.csv", index=True)
+    with open("Direct_Timing_Number_of_Requests_Results/" + SITE + "/" + key + "/confusion_matrices_rates.txt", "a") as file:
         file.write("True Positive Rate: " + str(tp_count_load[key] / (tp_count_load[key] + fn_count_load[key]) if (tp_count_load[key] + fn_count_load[key]) > 0 else 0) + "\n")
         file.write("True Negative Rate: " + str(tn_count_load[key] / (tn_count_load[key] + fp_count_load[key]) if (tn_count_load[key] + fp_count_load[key]) > 0 else 0) + "\n")
         file.write("Abstention Rate: " + str(unk_count_load[key] / total_load[key]) + "\n\n")

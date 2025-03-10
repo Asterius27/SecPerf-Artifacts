@@ -39,7 +39,7 @@ https://github.com/Asterius27/SecPerf-Artifacts/tree/96920c21cef1862d948c642c9b1
 Please refer to the README.md for a complete list of dependencies and installation instructions. Open the HTML file from Chrome if you want to collect data, all other scripts can be run simply by invoking python (python \<script\>.py).
 
 ### Testing the Environment (Only for Functional and Reproduced badges)
-None
+The scripts should run without any errors.
 
 ## Artifact Evaluation (Only for Functional and Reproduced badges)
 
@@ -70,35 +70,15 @@ Simply launch the launch_model_direct.py script (```python launch_model_direct.p
 Simply launch the launch_model_cross_site.py script (```python launch_model_cross_site.py```) to compute results for real-world websites in a cross-site timing scenario. By doing so you should be able to recompute the results presented in Table 3. It will take 3-4 hours (depending also on how powerful the CPU is) and just a couple of megabytes of space. This script uses the response times collected in the wild on Tranco's top 20 analyzed websites, and computes the results for both our model and BakingTimer. The results are saved in a csv file.
 
 #### Experiment 3: Number of Requests
-Modify the launch_model_direct.py and launch_model_cross_site.py scripts so that when the threshold is reached they save the MATLAB's output line number (variable ```i```) and use it to slice the arrays (using python's slice operator ```[:end]```) passed to the box test and BakingTimer functions (```box_test``` and ```baking_timer```, these functions should be called after executing MATLAB since we need ```i```). This is an extremely easy modification that requires only a couple of lines of code. Then launch the scripts in the same way as was done with the first two experiments. By doing so you should be able to recompute the results presented in Tables 4 and 5. It will take 3-4 hours (depending also on how powerful the CPU is) for each execution and just a couple of megabytes of space. Use the same datasets as before as this is only a study on the performance degradation of BakingTimer and the box test compared to the previous two experiments. The results are saved in a csv file.
+Simply launch the launch_model_direct_n_requests.py and launch_model_cross_site_n_requests.py scripts (```python launch_model_direct_n_requests.py``` and ```python launch_model_cross_site_n_requests.py```). For the launch_model_direct_n_requests.py script adjust the ```SITE``` variable to compute results for HotCRP and WordPress in a direct timing scenario. By doing so you should be able to recompute the results presented in Tables 4 and 5. It will take 3-4 hours (depending also on how powerful the CPU is) for each execution and just a couple of megabytes of space. Use the same datasets as before as this is only a study on the performance degradation of BakingTimer and the box test compared to the previous two experiments. The results are saved in a csv file.
 
 #### Experiment 4: Robustness Analysis
-When testing for robustness against RTT variations the launch_model_direct.py script should be modified so that every time a new measurement is loaded from the json file a random noise gets added using the following function:
-```python
-# Precomputed parameters for the log normal distribution (for the gaussian/normal distribution mean is 0 and standard deviations are the ones reported in the paper. RTT is 40 in both cases.)
-# -0.699627 (std dev: 0.3), 2.45026 (std dev: 7), 3.54887 (std dev: 21)
-# mean = -0.699627
-# sigma = 0.5
-# log_norm_mean = np.exp(mu + 0.5 * sigma**2)
+When testing for robustness against RTT variations launch the launch_model_direct_rtt_noise.py script (```python launch_model_direct_rtt_noise.py```) and adjust the ```NOISE_DISTRIBUTION``` and ```STD_DEV``` variables to compute results for the different distributions and standard variations that are presented in the paper. The results in Table 6 cannot be reproduced exactly, as the noise added to the measurements is randomly sampled from a distribution each time the script is executed. It will take 3-4 hours (depending also on how powerful the CPU is) for each execution and just a couple of megabytes of space. Here we are only testing for performance degradation based on RTT variability in a controlled setting and this was done on the HotCRP dataset. The results are saved in a csv file.
 
-def add_noise(mean, stddev, rtt, log_norm_mean):
-    # x = np.random.normal(loc=mean, scale=stddev)
-    x = np.random.lognormal(mean=mean, sigma=stddev)
-    x = x - log_norm_mean
-    if rtt + x < 0.:
-        return float(0)
-    return rtt + x
-```
-So for example when we load the response times for requests with correct email but wrong password we will use the following:
-```python
-result['wrong_pw_times_' + account] = [float(i) + add_noise(mean, stddev, rtt) for i in data['wrong_pw_times_' + account]]
-```
-Then we repeat the same steps as we did in the first experiment, since we are only testing for performance degradation based on RTT variability in a controlled setting. We tested this on the HotCRP dataset. By doing so you should be able to recompute the results presented in Table 6. It will take 3-4 hours (depending also on how powerful the CPU is) for each execution and just a couple of megabytes of space. The results are saved in a csv file.
-
-When testing for robustness against load balancing, the launch_model_direct.py script should be modified so that it loads the response times measured for our HotCRP installation with a load balancer ("Direct_Timing_Load_Balancer_Data" folder). To do so modify both the ```results_path``` and ```direct_times_path``` variables. Then we repeat the same steps as we did in the first experiment, since we are only testing for performance degradation based on the presence of a load balancer in a controlled setting. By doing so you should be able to recompute the results presented in Table 7. It will take 3-4 hours (depending also on how powerful the CPU is) and just a couple of megabytes of space. The results are saved in a csv file.
+When testing for robustness against load balancing, use the launch_model_direct_load_balancing.py script (```python launch_model_direct_load_balancing.py```). The only difference between this script and the launch_model_direct.py script is that this script loads the response times measured for our HotCRP installation with a load balancer ("Direct_Timing_Load_Balancer_Data" folder). By doing so you should be able to recompute the results presented in Table 7. It will take 3-4 hours (depending also on how powerful the CPU is) and just a couple of megabytes of space. Here we are only testing for performance degradation based on the presence of a load balancer in a controlled setting. The results are saved in a csv file.
 
 ## Limitations (Only for Functional and Reproduced badges)
-None
+The results in Table 6 cannot be reproduced exactly, as the noise added to the measurements is randomly sampled from a distribution each time the script is executed.
 
 ## Notes on Reusability (Only for Functional and Reproduced badges)
 The MATLAB scripts that correspond to the model can be reused to implement any kind of remote timing attack, the required inputs are described throughout the paper and in the comments of the python scripts. The other scripts are just general scripts that collect response time data and process it before feeding it to the model, as well as processing the model's output in order to compute the presented results.

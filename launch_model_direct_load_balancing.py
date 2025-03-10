@@ -10,14 +10,14 @@ import shutil
 SITE = 'hotcrp'
 EXECUTE_MATLAB = True
 
-results_path = "Direct_Timing_Results/" + SITE + "/"
-direct_times_path = f'Direct_Timing_Data/{SITE}/'
+results_path = "Direct_Timing_Load_Balancing_Results/" + SITE + "/"
+direct_times_path = f'Direct_Timing_Load_Balancer_Data/{SITE}/'
 th = 15
 nbins = 4
 thresh = 0.90
 
 try:
-    shutil.rmtree("Direct_Timing_Results/" + SITE + "/")
+    shutil.rmtree("Direct_Timing_Load_Balancing_Results/" + SITE + "/")
 except FileNotFoundError:
     pass
 except Exception as e:
@@ -212,7 +212,7 @@ for dt in attack_resp_times:
 
     i = 0
     lastl = []
-    os.makedirs(f'Direct_Timing_Results/{SITE}/{loads[dt]}', exist_ok=True)
+    os.makedirs(f'Direct_Timing_Load_Balancing_Results/{SITE}/{loads[dt]}', exist_ok=True)
     if EXECUTE_MATLAB:
         liness = process.stdout
     else:
@@ -242,7 +242,7 @@ for dt in attack_resp_times:
                     fp_count_load[loads[dt]] += 1
                     found = True
 
-        with open(f'Direct_Timing_Results/{SITE}/{loads[dt]}/{loads[dt]}_users_results_a_{dt}.csv', 'a', newline='') as csv_file:
+        with open(f'Direct_Timing_Load_Balancing_Results/{SITE}/{loads[dt]}/{loads[dt]}_users_results_a_{dt}.csv', 'a', newline='') as csv_file:
             writer = csv.writer(csv_file)
             if i == 1:
                 writer.writerow(['num_attack_obs', 'pr_wrong_email', 'pr_wrong_pw', 'expected_result', 'last_attack_resp_added', 'th'])
@@ -289,7 +289,7 @@ for dt in attack_resp_times:
 
     i = 0
     lastl = []
-    os.makedirs(f'Direct_Timing_Results/{SITE}/{loads[dt]}', exist_ok=True)
+    os.makedirs(f'Direct_Timing_Load_Balancing_Results/{SITE}/{loads[dt]}', exist_ok=True)
     if EXECUTE_MATLAB:
         liness = process.stdout
     else:
@@ -319,7 +319,7 @@ for dt in attack_resp_times:
                     fn_count_load[loads[dt]] += 1
                     found = True
 
-        with open(f'Direct_Timing_Results/{SITE}/{loads[dt]}/{loads[dt]}_users_results_b_{dt}.csv', 'a', newline='') as csv_file:
+        with open(f'Direct_Timing_Load_Balancing_Results/{SITE}/{loads[dt]}/{loads[dt]}_users_results_b_{dt}.csv', 'a', newline='') as csv_file:
             writer = csv.writer(csv_file)
             if i == 1:
                 writer.writerow(['num_attack_obs', 'pr_wrong_email', 'pr_wrong_pw', 'expected_result', 'last_attack_resp_added', 'th'])
@@ -346,14 +346,14 @@ confusion_matrix = [[tn_count[0], fp_count[0]], [fn_count[0], tp_count[0]]]
 confusion_matrix_bt = [[tn_count_bt[0], fp_count_bt[0]], [fn_count_bt[0], tp_count_bt[0]]]
 labels = ["Negative", "Positive"]
 df_cm = pd.DataFrame(confusion_matrix, index=[f"Actual {label}" for label in labels], columns=[f"Predicted {label}" for label in labels])
-df_cm.to_csv("Direct_Timing_Results/" + SITE + "/confusion_matrix.csv", index=True)
+df_cm.to_csv("Direct_Timing_Load_Balancing_Results/" + SITE + "/confusion_matrix.csv", index=True)
 df_cm = pd.DataFrame(confusion_matrix_bt, index=[f"Actual {label}" for label in labels], columns=[f"Predicted {label}" for label in labels])
-df_cm.to_csv("Direct_Timing_Results/" + SITE + "/confusion_matrix_bt.csv", index=True)
-with open("Direct_Timing_Results/" + SITE + "/confusion_matrices_unknown.txt", "a") as file:
+df_cm.to_csv("Direct_Timing_Load_Balancing_Results/" + SITE + "/confusion_matrix_bt.csv", index=True)
+with open("Direct_Timing_Load_Balancing_Results/" + SITE + "/confusion_matrices_unknown.txt", "a") as file:
     file.write("Unknown Count: " + str(unk_count[0]) + "\n")
     file.write("Baking Timer Unknown Count: " + str(unk_count_bt[0]) + "\n")
     file.write("Total (fp, tp, fn, tn, unk): " + str(total_all[0]) + "\n")
-with open("Direct_Timing_Results/" + SITE + "/confusion_matrices_rates.txt", "a") as file:
+with open("Direct_Timing_Load_Balancing_Results/" + SITE + "/confusion_matrices_rates.txt", "a") as file:
     file.write("True Positive Rate: " + str(tp_count[0] / (tp_count[0] + fn_count[0]) if (tp_count[0] + fn_count[0]) > 0 else 0) + "\n")
     file.write("True Negative Rate: " + str(tn_count[0] / (tn_count[0] + fp_count[0]) if (tn_count[0] + fp_count[0]) > 0 else 0) + "\n")
     file.write("Abstention Rate: " + str(unk_count[0] / total_all[0]) + "\n\n")
@@ -366,10 +366,10 @@ for key in tp_count_load:
     confusion_matrix_bt = [[tn_count_bt_load[key], fp_count_bt_load[key]], [fn_count_bt_load[key], tp_count_bt_load[key]]]
     labels = ["Negative", "Positive"]
     df_cm = pd.DataFrame(confusion_matrix, index=[f"Actual {label}" for label in labels], columns=[f"Predicted {label}" for label in labels])
-    df_cm.to_csv("Direct_Timing_Results/" + SITE + "/" + key + "/confusion_matrix.csv", index=True)
+    df_cm.to_csv("Direct_Timing_Load_Balancing_Results/" + SITE + "/" + key + "/confusion_matrix.csv", index=True)
     df_cm = pd.DataFrame(confusion_matrix_bt, index=[f"Actual {label}" for label in labels], columns=[f"Predicted {label}" for label in labels])
-    df_cm.to_csv("Direct_Timing_Results/" + SITE + "/" + key + "/confusion_matrix_bt.csv", index=True)
-    with open("Direct_Timing_Results/" + SITE + "/" + key + "/confusion_matrices_rates.txt", "a") as file:
+    df_cm.to_csv("Direct_Timing_Load_Balancing_Results/" + SITE + "/" + key + "/confusion_matrix_bt.csv", index=True)
+    with open("Direct_Timing_Load_Balancing_Results/" + SITE + "/" + key + "/confusion_matrices_rates.txt", "a") as file:
         file.write("True Positive Rate: " + str(tp_count_load[key] / (tp_count_load[key] + fn_count_load[key]) if (tp_count_load[key] + fn_count_load[key]) > 0 else 0) + "\n")
         file.write("True Negative Rate: " + str(tn_count_load[key] / (tn_count_load[key] + fp_count_load[key]) if (tn_count_load[key] + fp_count_load[key]) > 0 else 0) + "\n")
         file.write("Abstention Rate: " + str(unk_count_load[key] / total_load[key]) + "\n\n")

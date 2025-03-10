@@ -9,15 +9,17 @@ import shutil
 
 SITE = 'hotcrp'
 EXECUTE_MATLAB = True
+NOISE_DISTRIBUTION = 'log-norm' # norm or log-norm
+STD_DEV = 21 # 0.3 or 7 or 21
 
-results_path = "Direct_Timing_Results/" + SITE + "/"
+results_path = "Direct_Timing_" + NOISE_DISTRIBUTION + "_" + str(STD_DEV) + "_Results/" + SITE + "/"
 direct_times_path = f'Direct_Timing_Data/{SITE}/'
 th = 15
 nbins = 4
 thresh = 0.90
 
 try:
-    shutil.rmtree("Direct_Timing_Results/" + SITE + "/")
+    shutil.rmtree("Direct_Timing_" + NOISE_DISTRIBUTION + "_" + str(STD_DEV) + "_Results/" + SITE + "/")
 except FileNotFoundError:
     pass
 except Exception as e:
@@ -90,6 +92,48 @@ def delete_outliers(arr):
     else:
         return delete_outliers(filtered_arr)
 
+def sample_norm(mean, stddev, rtt):
+    x = np.random.normal(loc=mean, scale=stddev)
+    if rtt + x < 0.:
+        return float(0)
+    return rtt + x
+
+def sample_log_norm(mean, stddev, rtt, log_norm_mean):
+    x = np.random.lognormal(mean=mean, sigma=stddev)
+    shifted_x = x - log_norm_mean
+    if rtt + shifted_x < 0.:
+        return float(0)
+    return rtt + shifted_x
+
+def add_simulated_jitter(data, account, dist, stddev):
+    result = {}
+    rtt = 40.0
+
+    mean = 0
+
+    if stddev == 0.3:
+        mu = -0.699627
+    elif stddev == 7:
+        mu = 2.45026
+    elif stddev == 21:
+        mu = 3.54887
+    else:
+        raise Exception("Please compute a valid value of mu for the selected standard deviation.")
+    sigma = 0.5
+    log_norm_mean = np.exp(mu + 0.5 * sigma**2)
+
+    if dist == 'norm':
+        result['wrong_pw_times_' + account] = [float(i) + sample_norm(mean, stddev, rtt) for i in data['wrong_pw_times_' + account]]
+        result['wrong_email_times_' + account] = [float(i) + sample_norm(mean, stddev, rtt) for i in data['wrong_email_times_' + account]]
+    
+    elif dist == 'log-norm':
+        result['wrong_pw_times_' + account] = [float(i) + sample_log_norm(mu, sigma, rtt, log_norm_mean) for i in data['wrong_pw_times_' + account]]
+        result['wrong_email_times_' + account] = [float(i) + sample_log_norm(mu, sigma, rtt, log_norm_mean) for i in data['wrong_email_times_' + account]]
+    
+    else:
+        raise Exception("Select one of the supported distributions")
+    return result
+
 # Load exploration phase data for the specified account. Compute the X^0 and X^1 arrays.
 def load_expl_phase(account):
     dirs = os.listdir(direct_times_path)
@@ -111,7 +155,7 @@ def load_expl_phase(account):
                 load = file.split('_')[0]
                 file_path = os.path.join(dir_path, file)
                 with open(file_path, 'r') as f:
-                    data = json.load(f)
+                    data = add_simulated_jitter(json.load(f), account, NOISE_DISTRIBUTION, STD_DEV)
 
                     # Process X^0 and X^1 means, filtering outliers
                     email_wrong_pw_mean = np.mean(delete_outliers([float(i) for i in data['wrong_pw_times_' + account]]))
@@ -212,7 +256,7 @@ for dt in attack_resp_times:
 
     i = 0
     lastl = []
-    os.makedirs(f'Direct_Timing_Results/{SITE}/{loads[dt]}', exist_ok=True)
+    os.makedirs(f'Direct_Timing_{NOISE_DISTRIBUTION}_{STD_DEV}_Results/{SITE}/{loads[dt]}', exist_ok=True)
     if EXECUTE_MATLAB:
         liness = process.stdout
     else:
@@ -242,7 +286,7 @@ for dt in attack_resp_times:
                     fp_count_load[loads[dt]] += 1
                     found = True
 
-        with open(f'Direct_Timing_Results/{SITE}/{loads[dt]}/{loads[dt]}_users_results_a_{dt}.csv', 'a', newline='') as csv_file:
+        with open(f'Direct_Timing_{NOISE_DISTRIBUTION}_{STD_DEV}_Results/{SITE}/{loads[dt]}/{loads[dt]}_users_results_a_{dt}.csv', 'a', newline='') as csv_file:
             writer = csv.writer(csv_file)
             if i == 1:
                 writer.writerow(['num_attack_obs', 'pr_wrong_email', 'pr_wrong_pw', 'expected_result', 'last_attack_resp_added', 'th'])
@@ -289,7 +333,7 @@ for dt in attack_resp_times:
 
     i = 0
     lastl = []
-    os.makedirs(f'Direct_Timing_Results/{SITE}/{loads[dt]}', exist_ok=True)
+    os.makedirs(f'Direct_Timing_{NOISE_DISTRIBUTION}_{STD_DEV}_Results/{SITE}/{loads[dt]}', exist_ok=True)
     if EXECUTE_MATLAB:
         liness = process.stdout
     else:
@@ -319,7 +363,7 @@ for dt in attack_resp_times:
                     fn_count_load[loads[dt]] += 1
                     found = True
 
-        with open(f'Direct_Timing_Results/{SITE}/{loads[dt]}/{loads[dt]}_users_results_b_{dt}.csv', 'a', newline='') as csv_file:
+        with open(f'Direct_Timing_{NOISE_DISTRIBUTION}_{STD_DEV}_Results/{SITE}/{loads[dt]}/{loads[dt]}_users_results_b_{dt}.csv', 'a', newline='') as csv_file:
             writer = csv.writer(csv_file)
             if i == 1:
                 writer.writerow(['num_attack_obs', 'pr_wrong_email', 'pr_wrong_pw', 'expected_result', 'last_attack_resp_added', 'th'])
@@ -346,14 +390,14 @@ confusion_matrix = [[tn_count[0], fp_count[0]], [fn_count[0], tp_count[0]]]
 confusion_matrix_bt = [[tn_count_bt[0], fp_count_bt[0]], [fn_count_bt[0], tp_count_bt[0]]]
 labels = ["Negative", "Positive"]
 df_cm = pd.DataFrame(confusion_matrix, index=[f"Actual {label}" for label in labels], columns=[f"Predicted {label}" for label in labels])
-df_cm.to_csv("Direct_Timing_Results/" + SITE + "/confusion_matrix.csv", index=True)
+df_cm.to_csv("Direct_Timing_" + NOISE_DISTRIBUTION + "_" + str(STD_DEV) + "_Results/" + SITE + "/confusion_matrix.csv", index=True)
 df_cm = pd.DataFrame(confusion_matrix_bt, index=[f"Actual {label}" for label in labels], columns=[f"Predicted {label}" for label in labels])
-df_cm.to_csv("Direct_Timing_Results/" + SITE + "/confusion_matrix_bt.csv", index=True)
-with open("Direct_Timing_Results/" + SITE + "/confusion_matrices_unknown.txt", "a") as file:
+df_cm.to_csv("Direct_Timing_" + NOISE_DISTRIBUTION + "_" + str(STD_DEV) + "_Results/" + SITE + "/confusion_matrix_bt.csv", index=True)
+with open("Direct_Timing_" + NOISE_DISTRIBUTION + "_" + str(STD_DEV) + "_Results/" + SITE + "/confusion_matrices_unknown.txt", "a") as file:
     file.write("Unknown Count: " + str(unk_count[0]) + "\n")
     file.write("Baking Timer Unknown Count: " + str(unk_count_bt[0]) + "\n")
     file.write("Total (fp, tp, fn, tn, unk): " + str(total_all[0]) + "\n")
-with open("Direct_Timing_Results/" + SITE + "/confusion_matrices_rates.txt", "a") as file:
+with open("Direct_Timing_" + NOISE_DISTRIBUTION + "_" + str(STD_DEV) + "_Results/" + SITE + "/confusion_matrices_rates.txt", "a") as file:
     file.write("True Positive Rate: " + str(tp_count[0] / (tp_count[0] + fn_count[0]) if (tp_count[0] + fn_count[0]) > 0 else 0) + "\n")
     file.write("True Negative Rate: " + str(tn_count[0] / (tn_count[0] + fp_count[0]) if (tn_count[0] + fp_count[0]) > 0 else 0) + "\n")
     file.write("Abstention Rate: " + str(unk_count[0] / total_all[0]) + "\n\n")
@@ -366,10 +410,10 @@ for key in tp_count_load:
     confusion_matrix_bt = [[tn_count_bt_load[key], fp_count_bt_load[key]], [fn_count_bt_load[key], tp_count_bt_load[key]]]
     labels = ["Negative", "Positive"]
     df_cm = pd.DataFrame(confusion_matrix, index=[f"Actual {label}" for label in labels], columns=[f"Predicted {label}" for label in labels])
-    df_cm.to_csv("Direct_Timing_Results/" + SITE + "/" + key + "/confusion_matrix.csv", index=True)
+    df_cm.to_csv("Direct_Timing_" + NOISE_DISTRIBUTION + "_" + str(STD_DEV) + "_Results/" + SITE + "/" + key + "/confusion_matrix.csv", index=True)
     df_cm = pd.DataFrame(confusion_matrix_bt, index=[f"Actual {label}" for label in labels], columns=[f"Predicted {label}" for label in labels])
-    df_cm.to_csv("Direct_Timing_Results/" + SITE + "/" + key + "/confusion_matrix_bt.csv", index=True)
-    with open("Direct_Timing_Results/" + SITE + "/" + key + "/confusion_matrices_rates.txt", "a") as file:
+    df_cm.to_csv("Direct_Timing_" + NOISE_DISTRIBUTION + "_" + str(STD_DEV) + "_Results/" + SITE + "/" + key + "/confusion_matrix_bt.csv", index=True)
+    with open("Direct_Timing_" + NOISE_DISTRIBUTION + "_" + str(STD_DEV) + "_Results/" + SITE + "/" + key + "/confusion_matrices_rates.txt", "a") as file:
         file.write("True Positive Rate: " + str(tp_count_load[key] / (tp_count_load[key] + fn_count_load[key]) if (tp_count_load[key] + fn_count_load[key]) > 0 else 0) + "\n")
         file.write("True Negative Rate: " + str(tn_count_load[key] / (tn_count_load[key] + fp_count_load[key]) if (tn_count_load[key] + fp_count_load[key]) > 0 else 0) + "\n")
         file.write("Abstention Rate: " + str(unk_count_load[key] / total_load[key]) + "\n\n")
