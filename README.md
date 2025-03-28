@@ -6,8 +6,8 @@ This artifact contains all the measurements that were collected for the paper, a
 
 ### Model
 
-1. Install MATLAB
-2. Install the symbolic math toolbox add-on
+1. Install MATLAB (version 24.2.0.2712019 (R2024b))
+2. Install the symbolic math toolbox add-on (version 24.2)
 
 ### Load Simulator
 
@@ -16,7 +16,8 @@ This artifact contains all the measurements that were collected for the paper, a
 
 ### Python
 
-Install numpy, pandas, scipy and playwright
+Install Python (version 3.13.2)
+Install numpy (version 1.26.4), pandas (version 2.2.2), scipy (version 1.14.1) and playwright (version 1.45.1)
 
 ## References to the paper's pseudo-code
 
