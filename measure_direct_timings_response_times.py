@@ -44,10 +44,18 @@ def main_playwright():
             wrong_pw_times_account2 = []
             # Repeat the measurements more than once for each batch
             for j in range(50):  # samples
+                # WordPress
                 wrong_email_times_account1.append(measure_signin_response(url + generate_random_string(), "fakealice@gmail.com", "wrong", "log", "pwd", "input", "wp-login", False))
                 wrong_pw_times_account1.append(measure_signin_response(url + generate_random_string(), "alice@gmail.com", "wrong", "log", "pwd", "input", "wp-login", False))
                 wrong_email_times_account2.append(measure_signin_response(url + generate_random_string(), "fakebob@gmail.com", "wrong", "log", "pwd", "input", "wp-login", False))
                 wrong_pw_times_account2.append(measure_signin_response(url + generate_random_string(), "bob@gmail.com", "wrong", "log", "pwd", "input", "wp-login", False))
+
+                # HotCRP
+                # wrong_email_times_account1.append(measure_signin_response(url + generate_random_string(), "fakealice@gmail.com", "wrong", "email", "password", "button", "signin", False))
+                # wrong_pw_times_account1.append(measure_signin_response(url + generate_random_string(), "alice@gmail.com", "wrong", "email", "password", "button", "signin", False))
+                # wrong_email_times_account2.append(measure_signin_response(url + generate_random_string(), "fakebob@gmail.com", "wrong", "email", "password", "button", "signin", False))
+                # wrong_pw_times_account2.append(measure_signin_response(url + generate_random_string(), "bob@gmail.com", "wrong", "email", "password", "button", "signin", False))
+                
                 time.sleep(4)
             
             data = {

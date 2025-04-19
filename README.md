@@ -80,7 +80,7 @@ These scripts execute both the exploration and exploitation phases but only coll
    - `site` (line 10) is the web application name (e.g. wordpress or hotcrp)
    - `number_of_users` (line 25) is the number of users set in `load_simulator.js` script (the `target` field of the `options` object)
    - `skip` (line 26) is the number of users that will be subtracted at every cycle, in order to change the simulated load. (E.g. if number_of_users is 800 and skip is 200, then the script will measure reponse times at 4 different loads, in the following order: 800 users, 600 users, 400 users, 200 users. The number of users determines the load of the system.)
-   - Uncomment the batch of `measure_signin_response` function calls (lines 47 - 60) according to weather you are using wordpress or hotcrp
+   - Uncomment the batch of `measure_signin_response` function calls (lines 47 - 57) according to weather you are using wordpress or hotcrp
 3. Launch the `measure_direct_timings_response_times.py` script (it will take around 8 hours to complete, depending on how many different load scenarios it has to simulate and collect measurements for)
 4. Repeat all steps and relaunch the `measure_direct_timings_response_times.py` script to collect data for the other web application (either WordPress or HotCRP depending on which one you did first)
 5. Results will be inside the `Direct_Timing_Data_New/` folder

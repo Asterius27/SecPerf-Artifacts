@@ -77,7 +77,7 @@ def delete_outliers(arr):
 
 # Load exploration phase data for the specified user state (e.g., 'with_cookies' or 'without_cookies'). Compute the X^0 and X^1 arrays.
 def load_expl_phase(state):
-    files = os.listdir(resp_times_path)
+    files = [e for e in os.listdir(resp_times_path) if not e.startswith('.')]
     min_include_mean = {}
     min_omit_mean = {}
     min_include_dt = {}
@@ -140,7 +140,7 @@ fn_count_bt = {}
 unk_count_bt = {}
 
 # Process attack phase files to compute metrics
-filess = os.listdir(attack_times_path)
+filess = [e for e in os.listdir(attack_times_path) if not e.startswith('.')]
 for file in filess:
     dt = "_".join(file.split('_')[3:]).split(".")[0]
     if not file.startswith('old_') and file.endswith('.json'):
@@ -244,6 +244,8 @@ for file in filess:
                         if i == 1:
                             writer.writerow(['num_attack_obs', 'pr_omit', 'pr_include', 'expected_result', 'last_attack_resp_added', 'th'])
                         writer.writerow([i, output_arr[1], output_arr[3], data[key]['expected_result'], round(filt_resp_times_attack[i - 1], 3), th])
+
+                print(f"Finished computing results for {key} ({dt})")
 
                 total_all[key] += 1
                 if lastl[1] == "NaN" or lastl[3] == "NaN":

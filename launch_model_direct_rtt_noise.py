@@ -136,7 +136,7 @@ def add_simulated_jitter(data, account, dist, stddev):
 
 # Load exploration phase data for the specified account. Compute the X^0 and X^1 arrays.
 def load_expl_phase(account):
-    dirs = os.listdir(direct_times_path)
+    dirs = [e for e in os.listdir(direct_times_path) if not e.startswith('.')]
     expl_resp_times = {}
     loads = {}
     min_user_wrong_pw_mean = float('inf')
@@ -149,7 +149,8 @@ def load_expl_phase(account):
     min_email_wrong_email_dt = ''
     for dir in dirs:
         dir_path = os.path.join(direct_times_path, dir)
-        for file in os.listdir(dir_path):
+        files = [e for e in os.listdir(dir_path) if not e.startswith('.')]
+        for file in files:
             if not file.startswith('old_') and file.endswith('.json'):
                 dt = file.split('_')[5] + '_' + file.split('_')[6].split(".")[0]
                 load = file.split('_')[0]
@@ -207,7 +208,7 @@ total_all = [0]
 # Process attack phase data to compute metrics
 for dt in attack_resp_times:
 
-    # Simulate the attack in the case where the target account does not exists
+    # Simulate the attack in the case where the target account does not exist
 
     found = False
 
@@ -292,6 +293,8 @@ for dt in attack_resp_times:
                 writer.writerow(['num_attack_obs', 'pr_wrong_email', 'pr_wrong_pw', 'expected_result', 'last_attack_resp_added', 'th'])
             writer.writerow([i, output_arr[1], output_arr[3], 'wrong_email', round(filt_resp_times_attack_wrong_email[i - 1], 3), th])
 
+    print(f"Finished computing results for {SITE} with a {loads[dt]} users load ({dt} - target account does not exist)")
+
     total_all[0] += 1
     total_load[loads[dt]] += 1
     if lastl[1] == "NaN" or lastl[3] == "NaN":
@@ -368,6 +371,8 @@ for dt in attack_resp_times:
             if i == 1:
                 writer.writerow(['num_attack_obs', 'pr_wrong_email', 'pr_wrong_pw', 'expected_result', 'last_attack_resp_added', 'th'])
             writer.writerow([i, output_arr[1], output_arr[3], 'wrong_pw', round(filt_resp_times_attack_wrong_pw[i - 1], 3), th])
+
+    print(f"Finished computing results for {SITE} with a {loads[dt]} users load ({dt} - target account exists)")
 
     total_all[0] += 1
     total_load[loads[dt]] += 1
