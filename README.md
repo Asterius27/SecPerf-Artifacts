@@ -219,7 +219,7 @@ Processing the provided datasets to generate the paper's results takes approxima
 Please refer to the 'Dependencies/Installation instructions' and 'References to the paper's pseudo-code and Execution instructions' sections for a complete list of dependencies, installation, and execution instructions.
 
 ### Accessibility (All badges)
-https://github.com/Asterius27/SecPerf-Artifacts/tree/09ba50b0fb7bb2c5482848c5f6c3c9a90de40523 (TO BE UPDATED WITH THE LATEST COMMIT FROM THE REPO)
+https://github.com/Asterius27/SecPerf-Artifacts/tree/0e99039ccdbc18bc3684dca64e1efc7a850faf5d
 
 ### Set up the environment (Only for Functional and Reproduced badges)
 Please refer to the 'Dependencies/Installation instructions' section for a complete list of dependencies and installation instructions. Open the HTML file from Chrome if you want to collect data, all other scripts can be run simply by invoking python (python \<script\>.py).
