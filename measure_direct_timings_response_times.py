@@ -8,7 +8,7 @@ from measure_direct_timings_aux import measure_signin_response, generate_random_
 
 url = "" # Login page URL
 site = "" # Web application name
-results_dir = "Direct_Timing_Data/" + site
+results_dir = "Direct_Timing_Data_Not_From_Paper/" + site
 
 # Function used to modify the number of users in the load_simulator.js script 
 def modify_line_in_file(file_path, line_number, old_content, new_line_content):
@@ -49,7 +49,7 @@ def main_playwright():
                 wrong_pw_times_account1.append(measure_signin_response(url + generate_random_string(), "alice@gmail.com", "wrong", "log", "pwd", "input", "wp-login", False))
                 wrong_email_times_account2.append(measure_signin_response(url + generate_random_string(), "fakebob@gmail.com", "wrong", "log", "pwd", "input", "wp-login", False))
                 wrong_pw_times_account2.append(measure_signin_response(url + generate_random_string(), "bob@gmail.com", "wrong", "log", "pwd", "input", "wp-login", False))
-
+                
                 # HotCRP
                 # wrong_email_times_account1.append(measure_signin_response(url + generate_random_string(), "fakealice@gmail.com", "wrong", "email", "password", "button", "signin", False))
                 # wrong_pw_times_account1.append(measure_signin_response(url + generate_random_string(), "alice@gmail.com", "wrong", "email", "password", "button", "signin", False))
