@@ -218,9 +218,12 @@ for dt in attack_resp_times:
         liness = process.stdout
     else:
         liness = results
+        
+    empty = True
 
     # Process results from MATLAB and update metrics
     for line in liness:
+        empty = False
         i += 1
         if EXECUTE_MATLAB:
             output = line.decode('utf-8').replace(' ', '')
@@ -249,6 +252,8 @@ for dt in attack_resp_times:
                 writer.writerow(['num_attack_obs', 'pr_wrong_email', 'pr_wrong_pw', 'expected_result', 'last_attack_resp_added', 'th'])
             writer.writerow([i, output_arr[1], output_arr[3], 'wrong_email', round(filt_resp_times_attack_wrong_email[i - 1], 3), th])
 
+    if empty:
+        raise Exception("MATLAB is not running properly... have you added MATLAB to the PATH environment variable? Are you able to execute the 'matlab' command without any errors from any directory?")
     print(f"Finished computing results for {SITE} with a {loads[dt]} users load ({dt} - target account does not exist)")
 
     total_all[0] += 1
@@ -297,9 +302,12 @@ for dt in attack_resp_times:
         liness = process.stdout
     else:
         liness = results
+        
+    empty = True
 
     # Process results from MATLAB and update metrics
     for line in liness:
+        empty = False
         i += 1
         if EXECUTE_MATLAB:
             output = line.decode('utf-8').replace(' ', '')
@@ -328,6 +336,8 @@ for dt in attack_resp_times:
                 writer.writerow(['num_attack_obs', 'pr_wrong_email', 'pr_wrong_pw', 'expected_result', 'last_attack_resp_added', 'th'])
             writer.writerow([i, output_arr[1], output_arr[3], 'wrong_pw', round(filt_resp_times_attack_wrong_pw[i - 1], 3), th])
 
+    if empty:
+        raise Exception("MATLAB is not running properly... have you added MATLAB to the PATH environment variable? Are you able to execute the 'matlab' command without any errors from any directory?")
     print(f"Finished computing results for {SITE} with a {loads[dt]} users load ({dt} - target account exists)")
 
     total_all[0] += 1

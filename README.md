@@ -75,16 +75,14 @@ These scripts execute both the exploration and exploitation phases but only coll
    - `path` (line 11 and line 38) is the list of paths the load simulator will send requests to. Uncomment according to whether you are using wordpress (paths begin with wp-) or hotcrp (paths do not begin with wp-)
    - `target` (line 49 and 50) inside the `options` object is the number of virtual users the load simulator will use. This has to be set according to your machine
    - **DO NOT ADD OR REMOVE LINES FROM THIS FILE**
-2. Update the `measure_direct_timings_response_times.py` script with the correct URLs and parameters:
-   - `url` (line 9) is the web application's login page URL (e.g. localhost:3000/wp-login or localhost:3000/signin)
-   - `site` (line 10) is the web application name (e.g. wordpress or hotcrp)
-   - `number_of_users` (line 25) is the number of users set in `load_simulator.js` script (the `target` field of the `options` object)
-   - `skip` (line 26) is the number of users that will be subtracted at every cycle, in order to change the simulated load. (E.g. if number_of_users is 800 and skip is 200, then the script will measure reponse times at 4 different loads, in the following order: 800 users, 600 users, 400 users, 200 users. The number of users determines the load of the system.)
-   - Uncomment the batch of `measure_signin_response` function calls (lines 47 - 57) according to weather you are using wordpress or hotcrp
-3. Launch the `measure_direct_timings_response_times.py` script (it will take around 8 hours to complete, depending on how many different load scenarios it has to simulate and collect measurements for)
-4. Repeat all steps and relaunch the `measure_direct_timings_response_times.py` script to collect data for the other web application (either WordPress or HotCRP depending on which one you did first)
-5. Results will be inside the `Direct_Timing_Data_New/` folder
-6. If you want to use these new measurements to run the analysis, then rename the `Direct_Timing_Data/` folder to `Direct_Timing_Data_Old/` and rename the `Direct_Timing_Data_New/` folder to `Direct_Timing_Data/`
+2. Launch the `measure_direct_timings_response_times.py` script (it will take around 8 hours to complete, depending on how many different load scenarios it has to simulate and collect measurements for) with the following arguments:
+   - `url` is the URL of the login page of the local wordpress or hotcrp installation (e.g. http://localhost:9006/signin or http://localhost:9006/wp-login)
+   - `site` is the name of the site to analyze (either wordpress or hotcrp)
+   - `nusers` is the number of users set in the `load_simulator.js` script (the `target` field of the `options` object)
+   - `skip` is the number of users that will be subtracted at every cycle, in order to change the simulated load. (E.g. if number_of_users is 800 and skip is 200, then the script will measure reponse times at 4 different loads, in the following order: 800 users, 600 users, 400 users, 200 users. The number of users determines the load of the system.)
+3. Repeat all steps and relaunch the `measure_direct_timings_response_times.py` script to collect data for the other web application (either WordPress or HotCRP depending on which one you did first)
+4. Results will be inside the `Direct_Timing_Data_New/` folder
+5. If you want to use these new measurements to run the analysis, then rename the `Direct_Timing_Data/` folder to `Direct_Timing_Data_Old/` and rename the `Direct_Timing_Data_New/` folder to `Direct_Timing_Data/`
 
 #### [OPTIONAL] 1b. Data Collection for Cross-Site Timing Attacks
 
@@ -145,42 +143,58 @@ This completes the exploration phase, producing the `X^0`, `X^1`, and `X^R` arra
 
 #### 2a. Compute Direct Timing Attacks Results
 
-1. Execute `launch_model_direct.py`, no arguments needed (it will take around 4 hours on a decently fast machine)
-2. Set the `SITE` variable (line 10) to `wordpress`, with `th` (line 15) set to 5, or to `hotcrp`, with `th` set to 15, and relaunch the script
-3. The overall results are saved in .txt and .csv file inside the 'Direct_Timing_Results/<web_application_name>/' folder
+Execute `launch_model_direct.py` (it will take around 4 hours on a decently fast machine), with the following arguments:
+   - `site` is the name of the site to analyze (either `wordpress` or `hotcrp`)
+   - `th` is the threshold value used by the MATLAB script (5 for `wordpress` and 15 for `hotcrp`)
+
+So the commands needed to reproduce the paper's results are:
+```
+python3 launch_model_direct.py --site hotcrp --th 15
+python3 launch_model_direct.py --site wordpress --th 5
+```
+The overall results are saved in .txt and .csv files inside the 'Direct_Timing_Results/<web_application_name>/' folder.
 
 #### 2b. Compute Cross-Site Timing Attacks Results
 
-1. Execute `launch_model_cross_site.py`, no arguments needed (it will take around 4 hours on a decently fast machine)
-2. The overall results are saved in .txt and .csv file inside the 'Cross_Site_Results/' folder
+Execute `launch_model_cross_site.py`, no arguments needed (it will take around 4 hours on a decently fast machine). The overall results are saved in .txt and .csv files inside the 'Cross_Site_Results/' folder.
 
 #### 2c. Compute Direct Timing Attacks With Limit on Number of Requests Results
 
-1. Execute `launch_model_direct_n_requests.py`, no arguments needed (it will take around 4 hours on a decently fast machine)
-2. Set the `SITE` variable (line 10) to `wordpress`, with `th` (line 15) set to 5, or to `hotcrp`, with `th` set to 15, and relaunch the script
-3. The overall results are saved in .txt and .csv file inside the 'Direct_Timing_Number_of_Requests_Results/<web_application_name>/' folder
+Execute `launch_model_direct_n_requests.py` (it will take around 4 hours on a decently fast machine), with the following arguments:
+   - `site` is the name of the site to analyze (either `wordpress` or `hotcrp`)
+   - `th` is the threshold value used by the MATLAB script (5 for `wordpress` and 15 for `hotcrp`)
+
+So the commands needed to reproduce the paper's results are:
+```
+python3 launch_model_direct_n_requests.py --site hotcrp --th 15
+python3 launch_model_direct_n_requests.py --site wordpress --th 5
+```
+The overall results are saved in .txt and .csv files inside the 'Direct_Timing_Number_of_Requests_Results/<web_application_name>/' folder.
 
 #### 2d. Compute Cross-Site Timing Attacks With Limit on Number of Requests Results
 
-1. Execute `launch_model_cross_site_n_requests.py`, no arguments needed (it will take around 4 hours on a decently fast machine)
-2. The overall results are saved in .txt and .csv file inside the 'Cross_Site_Number_of_Requests_Results/' folder
+Execute `launch_model_cross_site_n_requests.py`, no arguments needed (it will take around 4 hours on a decently fast machine). The overall results are saved in .txt and .csv files inside the 'Cross_Site_Number_of_Requests_Results/' folder.
 
 #### 2e. Compute Direct Timing Attacks With Load Balancing Results
 
-1. Execute `launch_model_direct_load_balancing.py`, no arguments needed (it will take around 4 hours on a decently fast machine)
-2. The overall results are saved in .txt and .csv file inside the 'Direct_Timing_Load_Balancing_Results/<web_application_name>/' folder
+Execute `launch_model_direct_load_balancing.py`, no arguments needed (it will take around 4 hours on a decently fast machine). The overall results are saved in .txt and .csv files inside the 'Direct_Timing_Load_Balancing_Results/hotcrp/' folder.
 
 #### 2f. Compute Direct Timing Attacks With Simulated RTT Noise Results
 
-1. Execute `launch_model_direct_rtt_noise.py`, no arguments needed (it will take around 4 hours on a decently fast machine)
-2. Relaunch the script with the following noise distribution (`NOISE_DISTRIBUTION` variable at line 12) and standard deviation (`STD_DEV` variable at line 13) combinations:
-   - `NOISE_DISTRIBUTION = 'log-norm'` and `STD_DEV = 0.3`
-   - `NOISE_DISTRIBUTION = 'log-norm'` and `STD_DEV = 7`
-   - `NOISE_DISTRIBUTION = 'log-norm'` and `STD_DEV = 21`
-   - `NOISE_DISTRIBUTION = 'norm'` and `STD_DEV = 0.3`
-   - `NOISE_DISTRIBUTION = 'norm'` and `STD_DEV = 7`
-   - `NOISE_DISTRIBUTION = 'norm'` and `STD_DEV = 21`
-3. The overall results are saved in .txt and .csv file inside the 'Direct_Timing_<noise_distribution>_<std_dev>_Results/<web_application_name>/' folder
+Execute `launch_model_direct_rtt_noise.py` (it will take around 4 hours on a decently fast machine), with the following arguments:
+   - `distribution` is the distribution used to simulate the RTT noise (either norm or log-norm)
+   - `stddev` is the standard deviation of the distribution (either 0.3 or 7 or 21)
+
+So the commands needed to reproduce the paper's results are:
+```
+python3 launch_model_direct_rtt_noise.py --distribution norm --stddev 0.3
+python3 launch_model_direct_rtt_noise.py --distribution norm --stddev 7
+python3 launch_model_direct_rtt_noise.py --distribution norm --stddev 21
+python3 launch_model_direct_rtt_noise.py --distribution log-norm --stddev 0.3
+python3 launch_model_direct_rtt_noise.py --distribution log-norm --stddev 7
+python3 launch_model_direct_rtt_noise.py --distribution log-norm --stddev 21
+```
+The overall results are saved in .txt and .csv files inside the 'Direct_Timing_&lt;distribution&gt;_&lt;stddev&gt;_Results/hotcrp/' folder.
 
 ---
 
@@ -219,7 +233,7 @@ Processing the provided datasets to generate the paper's results takes approxima
 Please refer to the 'Dependencies/Installation instructions' and 'References to the paper's pseudo-code and Execution instructions' sections for a complete list of dependencies, installation, and execution instructions.
 
 ### Accessibility (All badges)
-https://github.com/Asterius27/SecPerf-Artifacts/tree/0e99039ccdbc18bc3684dca64e1efc7a850faf5d
+https://github.com/Asterius27/SecPerf-Artifacts/tree/0e99039ccdbc18bc3684dca64e1efc7a850faf5d (TO BE UPDATED WITH THE LATEST COMMIT)
 
 ### Set up the environment (Only for Functional and Reproduced badges)
 Please refer to the 'Dependencies/Installation instructions' section for a complete list of dependencies and installation instructions. Open the HTML file from Chrome if you want to collect data, all other scripts can be run simply by invoking python (python \<script\>.py).
@@ -250,16 +264,16 @@ To generate the results presented in the tables use the launch_model_direct_load
 ### Experiments 
 
 #### Experiment 1: Experiments in a Controlled Setting
-Simply launch the launch_model_direct.py script (```python launch_model_direct.py```) and adjust the ```SITE``` variable to compute results for HotCRP and WordPress in a direct timing scenario. By doing so you should be able to recompute the results presented in Table 2. It will take 3-4 hours (depending also on how powerful the CPU is) and just a couple of megabytes of space. This script uses the response times collected in our controlled setting with varying loads and computes the results for both our model and the box test. The results are saved in a csv file. Please refer to section 2a of this file for a complete list of instructions for this experiment.
+Simply launch the launch_model_direct.py script (```python launch_model_direct.py```) and change the ```site``` argument to compute results for HotCRP and WordPress in a direct timing scenario. By doing so you should be able to recompute the results presented in Table 2. It will take 3-4 hours (depending also on how powerful the CPU is) and just a couple of megabytes of space. This script uses the response times collected in our controlled setting with varying loads and computes the results for both our model and the box test. The results are saved in a csv file. Please refer to section 2a of this file for a complete list of instructions for this experiment.
 
 #### Experiment 2: Experiments in the Wild
 Simply launch the launch_model_cross_site.py script (```python launch_model_cross_site.py```) to compute results for real-world websites in a cross-site timing scenario. By doing so you should be able to recompute the results presented in Table 3. It will take 3-4 hours (depending also on how powerful the CPU is) and just a couple of megabytes of space. This script uses the response times collected in the wild on Tranco's top 20 analyzed websites, and computes the results for both our model and BakingTimer. The results are saved in a csv file. Please refer to section 2b of this file for a complete list of instructions for this experiment.
 
 #### Experiment 3: Number of Requests
-Simply launch the launch_model_direct_n_requests.py and launch_model_cross_site_n_requests.py scripts (```python launch_model_direct_n_requests.py``` and ```python launch_model_cross_site_n_requests.py```). For the launch_model_direct_n_requests.py script adjust the ```SITE``` variable to compute results for HotCRP and WordPress in a direct timing scenario. By doing so you should be able to recompute the results presented in Tables 4 and 5. It will take 3-4 hours (depending also on how powerful the CPU is) for each execution and just a couple of megabytes of space. Use the same datasets as before as this is only a study on the performance degradation of BakingTimer and the box test compared to the previous two experiments. The results are saved in a csv file. Please refer to sections 2c and 2d of this file for a complete list of instructions for this experiment.
+Simply launch the launch_model_direct_n_requests.py and launch_model_cross_site_n_requests.py scripts (```python launch_model_direct_n_requests.py``` and ```python launch_model_cross_site_n_requests.py```). For the launch_model_direct_n_requests.py script change the ```site``` argument to compute results for HotCRP and WordPress in a direct timing scenario. By doing so you should be able to recompute the results presented in Tables 4 and 5. It will take 3-4 hours (depending also on how powerful the CPU is) for each execution and just a couple of megabytes of space. Use the same datasets as before as this is only a study on the performance degradation of BakingTimer and the box test compared to the previous two experiments. The results are saved in a csv file. Please refer to sections 2c and 2d of this file for a complete list of instructions for this experiment.
 
 #### Experiment 4: Robustness Analysis
-When testing for robustness against RTT variations launch the launch_model_direct_rtt_noise.py script (```python launch_model_direct_rtt_noise.py```) and adjust the ```NOISE_DISTRIBUTION``` and ```STD_DEV``` variables to compute results for the different distributions and standard variations that are presented in the paper. The results in Table 6 cannot be reproduced exactly, as the noise added to the measurements is randomly sampled from a distribution each time the script is executed. It will take 3-4 hours (depending also on how powerful the CPU is) for each execution and just a couple of megabytes of space. Here we are only testing for performance degradation based on RTT variability in a controlled setting and this was done on the HotCRP dataset. The results are saved in a csv file.
+When testing for robustness against RTT variations launch the launch_model_direct_rtt_noise.py script (```python launch_model_direct_rtt_noise.py```) and change the ```distribution``` and ```stddev``` arguments to compute results for the different distributions and standard variations that are presented in the paper. The results in Table 6 cannot be reproduced exactly, as the noise added to the measurements is randomly sampled from a distribution each time the script is executed. It will take 3-4 hours (depending also on how powerful the CPU is) for each execution and just a couple of megabytes of space. Here we are only testing for performance degradation based on RTT variability in a controlled setting and this was done on the HotCRP dataset. The results are saved in a csv file.
 
 When testing for robustness against load balancing, use the launch_model_direct_load_balancing.py script (```python launch_model_direct_load_balancing.py```). The only difference between this script and the launch_model_direct.py script is that this script loads the response times measured for our HotCRP installation with a load balancer ("Direct_Timing_Load_Balancer_Data" folder). By doing so you should be able to recompute the results presented in Table 7. It will take 3-4 hours (depending also on how powerful the CPU is) and just a couple of megabytes of space. Here we are only testing for performance degradation based on the presence of a load balancer in a controlled setting. The results are saved in a csv file.
 

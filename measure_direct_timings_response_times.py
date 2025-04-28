@@ -5,9 +5,17 @@ import os
 import signal
 import subprocess
 from measure_direct_timings_aux import measure_signin_response, generate_random_string
+import argparse
 
-url = "" # Login page URL
-site = "" # Web application name
+parser = argparse.ArgumentParser(description="Data collection script used to measure response times for the direct timing attack.")
+parser.add_argument('--url', type=str, help='URL of the login page of the local wordpress or hotcrp installation (e.g. http://localhost:9006/signin)', required=True)
+parser.add_argument('--site', type=str, help='Name of the site to analyze (either wordpress or hotcrp)', required=True)
+parser.add_argument('--nusers', type=int, help='Number of users set in the load simulator', required=True)
+parser.add_argument('--skip', type=int, help='Number of users that will be subtracted at every cycle', required=True)
+args = parser.parse_args()
+
+url = args.url + "/?rand=" # Login page URL
+site = args.site # Web application name
 results_dir = "Direct_Timing_Data_Not_From_Paper/" + site
 
 # Function used to modify the number of users in the load_simulator.js script 
@@ -22,8 +30,8 @@ def modify_line_in_file(file_path, line_number, old_content, new_line_content):
         print(f"An error occurred: {e}")
 
 def main_playwright():
-    number_of_users = 700  # Starting number of users. Should correspond to the one in the load_simulator.js script
-    skip = 200
+    number_of_users = args.nusers  # Starting number of users. Should correspond to the one in the load_simulator.js script
+    skip = args.skip
     while number_of_users > 0:
         print(f"{datetime.now().strftime("%Y_%m_%d-%H_%M_%S")}: Starting measurements for {str(number_of_users)}...")
         # Launch load simulator
@@ -44,18 +52,21 @@ def main_playwright():
             wrong_pw_times_account2 = []
             # Repeat the measurements more than once for each batch
             for j in range(50):  # samples
-                # WordPress
-                wrong_email_times_account1.append(measure_signin_response(url + generate_random_string(), "fakealice@gmail.com", "wrong", "log", "pwd", "input", "wp-login", False))
-                wrong_pw_times_account1.append(measure_signin_response(url + generate_random_string(), "alice@gmail.com", "wrong", "log", "pwd", "input", "wp-login", False))
-                wrong_email_times_account2.append(measure_signin_response(url + generate_random_string(), "fakebob@gmail.com", "wrong", "log", "pwd", "input", "wp-login", False))
-                wrong_pw_times_account2.append(measure_signin_response(url + generate_random_string(), "bob@gmail.com", "wrong", "log", "pwd", "input", "wp-login", False))
+                if site == 'wordpress':
+                    wrong_email_times_account1.append(measure_signin_response(url + generate_random_string(), "fakealice@gmail.com", "wrong", "log", "pwd", "input", "wp-login", False))
+                    wrong_pw_times_account1.append(measure_signin_response(url + generate_random_string(), "alice@gmail.com", "wrong", "log", "pwd", "input", "wp-login", False))
+                    wrong_email_times_account2.append(measure_signin_response(url + generate_random_string(), "fakebob@gmail.com", "wrong", "log", "pwd", "input", "wp-login", False))
+                    wrong_pw_times_account2.append(measure_signin_response(url + generate_random_string(), "bob@gmail.com", "wrong", "log", "pwd", "input", "wp-login", False))
                 
-                # HotCRP
-                # wrong_email_times_account1.append(measure_signin_response(url + generate_random_string(), "fakealice@gmail.com", "wrong", "email", "password", "button", "signin", False))
-                # wrong_pw_times_account1.append(measure_signin_response(url + generate_random_string(), "alice@gmail.com", "wrong", "email", "password", "button", "signin", False))
-                # wrong_email_times_account2.append(measure_signin_response(url + generate_random_string(), "fakebob@gmail.com", "wrong", "email", "password", "button", "signin", False))
-                # wrong_pw_times_account2.append(measure_signin_response(url + generate_random_string(), "bob@gmail.com", "wrong", "email", "password", "button", "signin", False))
+                elif site == 'hotcrp':
+                    wrong_email_times_account1.append(measure_signin_response(url + generate_random_string(), "fakealice@gmail.com", "wrong", "email", "password", "button", "signin", False))
+                    wrong_pw_times_account1.append(measure_signin_response(url + generate_random_string(), "alice@gmail.com", "wrong", "email", "password", "button", "signin", False))
+                    wrong_email_times_account2.append(measure_signin_response(url + generate_random_string(), "fakebob@gmail.com", "wrong", "email", "password", "button", "signin", False))
+                    wrong_pw_times_account2.append(measure_signin_response(url + generate_random_string(), "bob@gmail.com", "wrong", "email", "password", "button", "signin", False))
                 
+                else:
+                    raise Exception("Only wordpress and hotcrp are supported, please provide a valid site name.")
+
                 time.sleep(4)
             
             data = {

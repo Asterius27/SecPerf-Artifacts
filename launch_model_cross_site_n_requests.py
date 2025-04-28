@@ -206,8 +206,11 @@ for file in filess:
                 else:
                     liness = results
 
+                empty = True
+
                 # Process results from MATLAB and update metrics
                 for line in liness:
+                    empty = False
                     i += 1
                     if EXECUTE_MATLAB:
                         output = line.decode('utf-8').replace(' ', '')
@@ -245,7 +248,9 @@ for file in filess:
                         if i == 1:
                             writer.writerow(['num_attack_obs', 'pr_omit', 'pr_include', 'expected_result', 'last_attack_resp_added', 'th'])
                         writer.writerow([i, output_arr[1], output_arr[3], data[key]['expected_result'], round(filt_resp_times_attack[i - 1], 3), th])
-
+                
+                if empty:
+                    raise Exception("MATLAB is not running properly... have you added MATLAB to the PATH environment variable? Are you able to execute the 'matlab' command without any errors from any directory?")
                 print(f"Finished computing results for {key} ({dt})")
                 
                 total_all[key] += 1

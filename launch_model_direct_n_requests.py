@@ -6,13 +6,19 @@ import numpy as np
 import csv
 import pandas as pd
 import shutil
+import argparse
 
-SITE = 'hotcrp'
+parser = argparse.ArgumentParser(description="Data processing script used to compute the results for the direct timing attack with a request cap for the Box Test.")
+parser.add_argument('--site', type=str, help='Name of the site to analyze (either wordpress or hotcrp)', required=True)
+parser.add_argument('--th', type=int, help='Threshold value used by the MATLAB script (5 for wordpress and 15 for hotcrp)', required=True)
+args = parser.parse_args()
+
+SITE = args.site
 EXECUTE_MATLAB = True
 
 results_path = "Direct_Timing_Number_of_Requests_Results/" + SITE + "/"
 direct_times_path = f'Direct_Timing_Data/{SITE}/'
-th = 15
+th = args.th
 nbins = 4
 thresh = 0.90
 
@@ -214,9 +220,12 @@ for dt in attack_resp_times:
         liness = process.stdout
     else:
         liness = results
+        
+    empty = True
 
     # Process results from MATLAB and update metrics
     for line in liness:
+        empty = False
         i += 1
         if EXECUTE_MATLAB:
             output = line.decode('utf-8').replace(' ', '')
@@ -247,6 +256,8 @@ for dt in attack_resp_times:
                 writer.writerow(['num_attack_obs', 'pr_wrong_email', 'pr_wrong_pw', 'expected_result', 'last_attack_resp_added', 'th'])
             writer.writerow([i, output_arr[1], output_arr[3], 'wrong_email', round(filt_resp_times_attack_wrong_email[i - 1], 3), th])
 
+    if empty:
+        raise Exception("MATLAB is not running properly... have you added MATLAB to the PATH environment variable? Are you able to execute the 'matlab' command without any errors from any directory?")
     print(f"Finished computing results for {SITE} with a {loads[dt]} users load ({dt} - target account does not exist)")
 
     total_all[0] += 1
@@ -300,9 +311,12 @@ for dt in attack_resp_times:
         liness = process.stdout
     else:
         liness = results
+        
+    empty = True
 
     # Process results from MATLAB and update metrics
     for line in liness:
+        empty = False
         i += 1
         if EXECUTE_MATLAB:
             output = line.decode('utf-8').replace(' ', '')
@@ -333,6 +347,8 @@ for dt in attack_resp_times:
                 writer.writerow(['num_attack_obs', 'pr_wrong_email', 'pr_wrong_pw', 'expected_result', 'last_attack_resp_added', 'th'])
             writer.writerow([i, output_arr[1], output_arr[3], 'wrong_pw', round(filt_resp_times_attack_wrong_pw[i - 1], 3), th])
 
+    if empty:
+        raise Exception("MATLAB is not running properly... have you added MATLAB to the PATH environment variable? Are you able to execute the 'matlab' command without any errors from any directory?")
     print(f"Finished computing results for {SITE} with a {loads[dt]} users load ({dt} - target account exists)")
 
     total_all[0] += 1
