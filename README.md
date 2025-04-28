@@ -79,7 +79,10 @@ These scripts execute both the exploration and exploitation phases but only coll
    - `url` is the URL of the login page of the local wordpress or hotcrp installation (e.g. http://localhost:9006/signin or http://localhost:9006/wp-login)
    - `site` is the name of the site to analyze (either wordpress or hotcrp)
    - `nusers` is the number of users set in the `load_simulator.js` script (the `target` field of the `options` object)
-   - `skip` is the number of users that will be subtracted at every cycle, in order to change the simulated load. (E.g. if number_of_users is 800 and skip is 200, then the script will measure reponse times at 4 different loads, in the following order: 800 users, 600 users, 400 users, 200 users. The number of users determines the load of the system.)
+   - `skip` is the number of users that will be subtracted at every cycle, in order to change the simulated load. (E.g. if number_of_users is 800 and skip is 200, then the script will measure reponse times at 4 different loads, in the following order: 800 users, 600 users, 400 users, 200 users. The number of users determines the load of the system.) So an example command would be the following:
+```
+python3 measure_direct_timings_response_times.py --url http://localhost:9006/signin --site hotcrp --nusers 700 --skip 200
+```
 3. Repeat all steps and relaunch the `measure_direct_timings_response_times.py` script to collect data for the other web application (either WordPress or HotCRP depending on which one you did first)
 4. Results will be inside the `Direct_Timing_Data_New/` folder
 5. If you want to use these new measurements to run the analysis, then rename the `Direct_Timing_Data/` folder to `Direct_Timing_Data_Old/` and rename the `Direct_Timing_Data_New/` folder to `Direct_Timing_Data/`
