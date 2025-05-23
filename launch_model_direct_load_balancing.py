@@ -252,8 +252,10 @@ for dt in attack_resp_times:
                 writer.writerow(['num_attack_obs', 'pr_wrong_email', 'pr_wrong_pw', 'expected_result', 'last_attack_resp_added', 'th'])
             writer.writerow([i, output_arr[1], output_arr[3], 'wrong_email', round(filt_resp_times_attack_wrong_email[i - 1], 3), th])
 
-    if empty:
-        raise Exception("MATLAB is not running properly... have you added MATLAB to the PATH environment variable? Are you able to execute the 'matlab' command without any errors from any directory?")
+    if empty and EXECUTE_MATLAB:
+        for line in process.stderr:
+            print("MATLAB output: ", line, end='\n')
+        raise Exception("MATLAB is not running properly... have you added MATLAB to the PATH environment variable? Are you able to execute the 'matlab' command without any errors from any directory? Have you installed the required add-ons?")
     print(f"Finished computing results for {SITE} with a {loads[dt]} users load ({dt} - target account does not exist)")
 
     total_all[0] += 1
@@ -336,8 +338,10 @@ for dt in attack_resp_times:
                 writer.writerow(['num_attack_obs', 'pr_wrong_email', 'pr_wrong_pw', 'expected_result', 'last_attack_resp_added', 'th'])
             writer.writerow([i, output_arr[1], output_arr[3], 'wrong_pw', round(filt_resp_times_attack_wrong_pw[i - 1], 3), th])
 
-    if empty:
-        raise Exception("MATLAB is not running properly... have you added MATLAB to the PATH environment variable? Are you able to execute the 'matlab' command without any errors from any directory?")
+    if empty and EXECUTE_MATLAB:
+        for line in process.stderr:
+            print("MATLAB output: ", line, end='\n')
+        raise Exception("MATLAB is not running properly... have you added MATLAB to the PATH environment variable? Are you able to execute the 'matlab' command without any errors from any directory? Have you installed the required add-ons?")
     print(f"Finished computing results for {SITE} with a {loads[dt]} users load ({dt} - target account exists)")
 
     total_all[0] += 1

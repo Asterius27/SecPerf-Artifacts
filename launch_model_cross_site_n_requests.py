@@ -249,8 +249,10 @@ for file in filess:
                             writer.writerow(['num_attack_obs', 'pr_omit', 'pr_include', 'expected_result', 'last_attack_resp_added', 'th'])
                         writer.writerow([i, output_arr[1], output_arr[3], data[key]['expected_result'], round(filt_resp_times_attack[i - 1], 3), th])
                 
-                if empty:
-                    raise Exception("MATLAB is not running properly... have you added MATLAB to the PATH environment variable? Are you able to execute the 'matlab' command without any errors from any directory?")
+                if empty and EXECUTE_MATLAB:
+                    for line in process.stderr:
+                        print("MATLAB output: ", line, end='\n')
+                    raise Exception("MATLAB is not running properly... have you added MATLAB to the PATH environment variable? Are you able to execute the 'matlab' command without any errors from any directory? Have you installed the required add-ons?")
                 print(f"Finished computing results for {key} ({dt})")
                 
                 total_all[key] += 1

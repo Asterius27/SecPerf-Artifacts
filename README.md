@@ -9,6 +9,18 @@ This artifact contains all the measurements that were collected for the paper, a
 1. Install MATLAB (version 24.2.0.2712019 (R2024b)) with Simulink (select it when prompted in the installation wizard)
 2. Add MATLAB to the PATH environmnet variable (to test if you have successfully added MATLAB to path, you should be able to launch matlab by using the `matlab` command from any directory)
 3. Install the symbolic math toolbox add-on (version 24.2). (From MATLAB: Apps -> Get More Apps -> Search for 'symbolic math toolbox' -> Install)
+4. Check that the add-ons where successfully installed:
+```
+matlab -nodisplay -nosplash -r "ver; exit"
+```
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;In the output you should see the following lines:
+```
+...
+MATLAB                                                Version 24.2        (R2024b)
+Simulink                                              Version 24.2        (R2024b)
+Symbolic Math Toolbox                                 Version 24.2        (R2024b)
+...
+```
 
 ### Python
 
