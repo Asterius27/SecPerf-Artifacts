@@ -10,7 +10,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description="Data processing script used to compute the results for the direct timing attack with a simulated RTT noise.")
 parser.add_argument('--distribution', type=str, help='Distribution used to simulate the RTT noise (either norm or log-norm)', required=True)
-parser.add_argument('--stddev', type=int, help='Standard Deviation of the distribution (either 0.3 or 7 or 21)', required=True)
+parser.add_argument('--stddev', type=float, help='Standard Deviation of the distribution (either 0.3 or 7 or 21)', required=True)
 args = parser.parse_args()
 
 SITE = 'hotcrp'
