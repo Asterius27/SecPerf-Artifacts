@@ -64,6 +64,8 @@ Because we had to run our tests using previously collected data, due to reasons 
 
 There is no strict order in which the scripts must be executed. All data collection scripts are optional, as the required datasets are already provided. Note, however, that generating new datasets will not allow for exact reproduction of the paper’s results, since the datasets include response times measured from real-world websites. If you choose not to use the provided datasets, make sure to run all data collection scripts before executing any data processing scripts. **It is recommended to use the provided datasets.**
 
+The mapping between results and their corresponding tables/figures found in the paper, as well as the interpretation of the results of the scripts, which are described in the following sections, can be found in the "Main Results" and "Claims and Experiments" sections of the Artifact Appendix, located at the end of the README.
+
 Here's how these steps are organized:
 
 ### [OPTIONAL] 1. Data Collection  
