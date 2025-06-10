@@ -130,7 +130,7 @@ After collecting the data, we process it using the following scripts:
 - **Direct timing attacks with load balancing:** `launch_model_direct_load_balancing.py`
 - **Direct timing attacks with simulated RTT noise:** `launch_model_direct_rtt_noise.py`
 
-All scripts handle processing for the exploration and exploitation phases. The general workflow is as follows:
+All scripts handle processing for the exploration and exploitation phases. Alternatively, all scripts can be executed collectively using the `launch_all_experiments.sh` (`sh launch_all_experiments.sh`) bash script, rather than launching them individually. The general workflow is as follows:
 
 #### Exploration Phase:
 1. **Load and preprocess data:**  
