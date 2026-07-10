@@ -1,5 +1,5 @@
-function [Pr_omit, Pr_include] = getProbs_det(l, mu, tau_omit, tau_include, rs, th, rtt)
-    
+function [Pr_omit, Pr_include] = get_probs_cont_ps(l, mu, k_omit, gamma_omit, k_include, gamma_include, rs, rtt, th)
+
     %%%%%%%%%%%%%%%%%%%%%%% Params %%%%%%%%%%%%%%%%%%%%%%%%%
     addpath('aux/')
     
@@ -10,29 +10,31 @@ function [Pr_omit, Pr_include] = getProbs_det(l, mu, tau_omit, tau_include, rs, 
     syms s;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    w_omit_up = ((rs + th) - rtt) - tau_omit;
-    w_omit_lw = ((rs - th) - rtt) - tau_omit;
+    w_omit_up = ((rs + th) - rtt);
+    w_omit_lw = ((rs - th) - rtt);
+    w_omit_lw(w_omit_lw < 0) = 0;
     
-    w_include_up = ((rs + th) - rtt) - tau_include;
-    w_include_lw = ((rs - th) - rtt) - tau_include;
+    w_include_up = ((rs + th) - rtt);
+    w_include_lw = ((rs - th) - rtt);
+    w_include_lw(w_include_lw < 0) = 0;
     
     % Load is zero
-    if l == 0 && mu == 0 
+    if l == 0 && mu == 1
     
         % Initialize f_omit and f_include
-        f_omit = (w_omit_lw <= 0 & w_omit_up >= 0);
-        f_include = (w_include_lw <= 0 & w_include_up >= 0);
+        f_omit = erl_cdf_gamma(w_omit_up, k_omit, gamma_omit) - erl_cdf_gamma(w_omit_lw, k_omit, gamma_omit);
+        f_include = erl_cdf_gamma(w_include_up, k_include, gamma_include) - erl_cdf_gamma(w_include_lw, k_include, gamma_include);
         
     else
+
+        F_s = @(l, u, s, k, gam) lst_respTime_MErl1PS(l, u, s, k, gam)/s;
         
-        F_s = @(s, l, mu, tau) F_wait_PS(l, mu, tau, s)/s;
-        
-        F = [F_s(s, l, mu, tau_omit), F_s(s, l, mu, tau_include)];
+        F = [F_s(l, mu, s, k_omit, gamma_omit), F_s(l, mu, s, k_include, gamma_include)];
         
         % Initialize f_omit and f_include
         f_omit = zeros(1, numel(rs));
         f_include = zeros(1, numel(rs));
-        
+
         % Compute f_omit_up and f_omit_lw where conditions are satisfied
         valid_w_omit_up = w_omit_up > 0;
         valid_w_omit_lw = w_omit_lw > 0;
@@ -56,8 +58,12 @@ function [Pr_omit, Pr_include] = getProbs_det(l, mu, tau_omit, tau_include, rs, 
         f_include_lw(valid_w_include_lw) = matlab_ilt(matlabFunction(F(2)), w_include_lw(valid_w_include_lw), funEvals, met);
         
         f_include = max(f_include_up - f_include_lw, 0) .* (abs(f_include_up - f_include_lw) >= 10^-4);
-
+        
+        
     end
+
+    f_omit = max(0.02, min(f_omit, 0.98));
+    f_include = max(0.02, min(f_include, 0.98));
 
     % Compute the products
     fprod_omit = prod(f_omit);
@@ -68,15 +74,9 @@ function [Pr_omit, Pr_include] = getProbs_det(l, mu, tau_omit, tau_include, rs, 
     prior_include = 0.5;
     
     % Compute the posterior probabilities (Pr. of A | B given we observed rs)
-    
     denominator = (prior_omit * fprod_omit + prior_include * fprod_include);
     
     Pr_omit = (prior_omit * fprod_omit) / denominator;
     Pr_include = (prior_include * fprod_include) / denominator;
     
-    %toc
-
 end
-
-
-
