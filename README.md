@@ -1,4 +1,4 @@
-# Queueing for Secrets: Continuous-Time Inference for Remote Timing Attacks Artifacts
+# Queuing for Secrets: Model-Based Remote Timing Attacks Artifacts
 
 This artifact contains the new model introduced in the journal extension of the 2025 PoPETs paper "Stochastic Models for Remote Timing Attacks". The datasets and data processing scripts are identical to those used in the original paper. For convenience, all the datasets and data processing scripts that were used for this version of the paper have been included in this repository. Thus, the resources present in this repository allow the full reproduction of the new paper's results.
 
